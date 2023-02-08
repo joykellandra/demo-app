@@ -4,20 +4,18 @@ on:
   push:
     branches: [ main ]
     
-env:
-  AWS_REGION: us-east-1
-  ECR_REGISTRY: 490294748073.dkr.ecr.us-east-1.amazonaws.com
-  ECR_IMAGE: demo-app
-  K8S_NAMESPACE: staging
-  
 jobs:
   build-and-deploy:
      name: Build and Push to ECR
      runs-on: ubuntu-latest
      
+     env:
+       AWS_REGION: us-east-1
+       EKS_CLUSTER_NAME: demo
+     
      steps:
      - name: Checkout
-       uses: actions/checkout@v2
+       uses: actions/checkout@v3
        
      - name: Set up JDK 19
        uses: actions/setup-java@v1
@@ -38,7 +36,7 @@ jobs:
        with:
          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-         aws-region: us-east-1
+         aws-region: ${{ env.AWS_REGION }}
          
      - name: Login to Amazon ECR
        id: login-ecr
@@ -58,9 +56,27 @@ jobs:
        run: |
          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+         echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
          
-     - name: Apply Kubernetes manifests
-       env: 
-         K8S_NAMESPACE: ${{ env.K8S_NAMESPACE }}
-         K8S_IMAGE: ${{ env.ECR_REGISTRY }}/${{ env.ECR_IMAGE }}:${{ env.TAG_NAME }}
-       uses: Azure/k8s-apply@v1
+     - name: Setup kubeconfig
+       id: setup-kubeconfig
+       run: |
+         aws eks --region $AWS_REGION update-kubeconfig --name $EKS_CLUSTER_NAME
+         
+     - name: Deploy k8s yaml
+       id: deploy-k8s-yaml
+       env:
+         K8S_YAML_DIR: ./K8S
+         IMAGE_NAME: ${{ steps.build-image.outputs.image }}
+       run: |
+         # Setup kustomize
+         cd $K8S_YAML_DIR
+         curl -s -o kustomize --location https://github.com/kubernetes-sigs/kustomize/releases/download/v3.1.0/kustomize_3.1.0_linux_amd64
+         chmod u+x ./kustomize
+         ./kustomize edit set image example-eks=$IMAGE_NAME
+         ./kustomize build . | kubectl apply -f -
+         # Verify deployment
+         kubectl rollout status deployment/aws-example-octodex
+         # List Public IP of cluster
+         kubectl get services -o wide
+         kubectl get ingress
