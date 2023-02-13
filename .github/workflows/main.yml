@@ -38,18 +38,6 @@ jobs:
          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
          aws-region: ${{ env.AWS_REGION }}
          
-     - name: Install Terraform
-       uses: hashicorp/setup-terraform@v2
-       with:
-         terraform_version: "~>4.0"
-
-     - name: Set up EKS on Fargate Environment
-       uses: aws-actions/amazon-eks-fargate@v0.1.1
-       with:
-         terraform_version: "~>4.0"
-         working-directory: ./fargate-deployment/terraform/
-         tf_actions_command: apply
-         
      - name: Login to Amazon ECR
        id: login-ecr
        uses: aws-actions/amazon-ecr-login@v1
@@ -69,6 +57,18 @@ jobs:
          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
          echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+         
+     - name: Install Terraform
+       uses: hashicorp/setup-terraform@v2
+       with:
+         terraform_version: 1.1.7
+
+     - name: Set up EKS on Fargate Environment
+       uses: aws-actions/amazon-eks-fargate@v0.1
+       with:
+         terraform_version: 1.1.7
+         working-directory: ./fargate-deployment/terraform/
+         tf_actions_command: apply
          
     # - name: Update kubeconfig
     #   run: aws eks --region $AWS_REGION update-kubeconfig --name $AWS_CLUSTER_NAME  
