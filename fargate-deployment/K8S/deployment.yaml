@@ -1,34 +1,24 @@
 ---
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: staging
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: spring-boot-docker
-  namespace: staging
+  name: spring-boot-app-deployment
 spec:
+  replicas: 1
   selector:
     matchLabels:
-      run: spring-boot-docker
-  # remove replica if using gitops
-  replicas: 1
+      app: demo-app
   template:
     metadata:
       labels:
-        run: spring-boot-docker
+        app: demo-app
     spec:
       containers:
-      - name: spring-boot-docker
-        image: <Image>
-        resources:
-          limits:
-            memory: "256Mi"
-            cpu: "500m"
-          requests:
-            cpu: "500m"
-            memory: "256Mi"
-        ports:
-        - containerPort: 9090
+        - name: demo-app
+          image: ${ECR_REPOSITORY_URI}
+          ports:
+            - containerPort: 8080
+          resources:
+            limits:
+              memory: "512Mi"
+      serviceAccountName: eks-fargate-sa
