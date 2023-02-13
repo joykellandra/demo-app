@@ -38,14 +38,14 @@ jobs:
          aws-region: ${{ env.AWS_REGION }}
          
      - name: Install Terraform
-       uses: hashicorp/terraform-github-actions@v1
+       uses: hashicorp/setup-terraform@v2
        with:
-        tf_actions_version: 0.13.x
+         terraform_version: 1.1.7
 
      - name: Set up EKS on Fargate Environment
-       uses: hashicorp/terraform-github-actions@v1
+       uses: aws-actions/amazon-eks-fargate@v0.1
        with:
-         tf_actions_version: 0.13.x
+         terraform_version: 1.1.7
          working-directory: ./fargate-deployment/terraform/
          tf_actions_command: apply
          
