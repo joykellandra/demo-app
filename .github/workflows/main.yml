@@ -63,11 +63,17 @@ jobs:
        with:
          terraform_version: 1.1.7
 
+     - name: Install Kubectl
+       uses: azure/setup-kubectl@v3
+       with:
+         version: 'v1.24.0' # default is latest stable
+       id: install
+
      - name: Set up EKS on Fargate Environment
-       uses: aws-actions/amazon-eks-fargate@v0.1
+       uses: aws-actions/amazon-eks-fargate@v0.1.1
        with:
          terraform_version: 1.1.7
-         working-directory: ./fargate-deployment/terraform/
+         working-directory: ./fargate-deployment/terraform
          tf_actions_command: apply
          
     # - name: Update kubeconfig
