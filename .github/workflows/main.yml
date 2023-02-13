@@ -11,7 +11,8 @@ jobs:
      
      env:
        AWS_REGION: us-east-1
-    #   ECR_REPOSITORY_URI: ${{ steps.push.outputs.repositoryUri }}
+       ECR_REPOSITORY_URI: ${{ steps.push.outputs.repositoryUri }}
+       AWS_CLUSTER_NAME: demo
        
      steps:
      - name: Checkout
@@ -78,8 +79,9 @@ jobs:
  #        working-directory: ./fargate-deployment/terraform
  #        tf_actions_command: apply
          
-    # - name: Update kubeconfig
-    #   run: aws eks --region $AWS_REGION update-kubeconfig --name $AWS_CLUSTER_NAME  
+     - name: Update kubeconfig
+       run: |
+         aws eks --region ${{ env.AWS_REGION }} update-kubeconfig --name ${{ env.AWS_CLUSTER_NAME }} 
        
      - name: Apply Kubernetes Deployment
        run: kubectl apply -f ./fargate-deployment/K8S/deployment.yaml
