@@ -70,9 +70,9 @@ jobs:
          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
          echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
          
-     - name: Update kubeconfig
-       run: aws eks update-kubeconfig --region $AWS_REGION --name $AWS_CLUSTER_NAME  
-        
+    # - name: Update kubeconfig
+    #   run: aws eks --region $AWS_REGION update-kubeconfig --name $AWS_CLUSTER_NAME  
+       
      - name: Apply Kubernetes Deployment
        run: kubectl apply -f ./fargate-deployment/K8S/deployment.yaml
 
