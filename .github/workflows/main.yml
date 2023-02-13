@@ -11,7 +11,7 @@ jobs:
      
      env:
        AWS_REGION: us-east-1
-       ECR_REPOSITORY_URI: ${{ steps.push.outputs.repositoryUri }}
+    #   ECR_REPOSITORY_URI: ${{ steps.push.outputs.repositoryUri }}
        
      steps:
      - name: Checkout
