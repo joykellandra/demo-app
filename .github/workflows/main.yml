@@ -70,11 +70,11 @@ jobs:
          echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
          
      - name: Apply Kubernetes Deployment
-       uses: kubernetes-actions/kubectl@v1
+       uses: azure/k8s-apply@v1
        with:
          args: apply -f ./fargate-deployment/K8S/deployment.yaml
 
      - name: Apply Kubernetes Service
-       uses: kubernetes-actions/kubectl@v1
+       uses: azure/k8s-apply@v1
        with:
          args: apply -f ./fargate-deployment/K8S/service.yaml
