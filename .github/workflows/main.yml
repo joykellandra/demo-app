@@ -86,7 +86,7 @@ jobs:
          
      - name: Update kubeconfig
        run: |
-         aws eks --region ${{ env.AWS_REGION }} update-kubeconfig --name ${{ env.AWS_CLUSTER_NAME }} 
+         aws eks --region ${{ env.AWS_REGION }} update-kubeconfig --name demo 
        
      - name: Apply Kubernetes Deployment
        run: kubectl apply -f ./fargate-deployment/K8S/deployment.yaml
