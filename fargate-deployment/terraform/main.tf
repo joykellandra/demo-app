@@ -3,9 +3,9 @@ provider "aws" {
 }
 
 module "eks-cluster" {
-  source = "terraform-aws-modules/eks/aws"
+  source  = "terraform-aws-modules/eks/aws"
   version = "~> 19.0"
-  cluster_name = "eks-fargate-cluster"
+  cluster_name    = "eks-fargate-cluster"
   cluster_version = "1.24"
   subnets = [
     "subnet-0d278a9fbc829a970", 
