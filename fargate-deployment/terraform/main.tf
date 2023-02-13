@@ -11,7 +11,7 @@ terraform {
   }
 }
 
-module "eks-cluster" {
+module "eks" {
   source  = "terraform-aws-modules/eks/aws"
   version = "~> 19.0"
   cluster_name    = "eks-fargate-cluster"
