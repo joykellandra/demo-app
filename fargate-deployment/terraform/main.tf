@@ -2,9 +2,11 @@ provider "aws" {
   region = "us-east-1"
 }
 
-module "eks" {
+module "eks-cluster" {
   source = "terraform-aws-modules/eks/aws"
+  version = "17.1.0"
   cluster_name = "eks-fargate-cluster"
+  cluster_version = "1.21"
   subnets = [
     "subnet-0d278a9fbc829a970", 
     "subnet-014847ee82d628f15", 
