@@ -65,9 +65,8 @@ jobs:
          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
          echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
          
-     - name: Eksctl-cmd
-       id: install
-       uses: robatwave/github-action-eksctl@0.1.2
+     - name: Helm on EKS (with eksctl)
+       uses: tensor-hq/eksctl-helm-action@0.1.0
    
      - name: Set up EKS on Fargate Environment
        id: setup-fargate
