@@ -85,17 +85,17 @@ jobs:
 #         sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
 #         kubectl version --client
          
-#     - name: Install Eksctl
-#       run: |
-#         curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
-#         sudo mv /tmp/eksctl /usr/local/bin
-#         eksctl version
+     - name: Install Eksctl
+       run: |
+         curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+         sudo mv /tmp/eksctl /usr/local/bin
+         eksctl version
    
-#     - name: Set up EKS on Fargate Environment
-#       id: setup-fargate
-#       run: |
-#         eksctl create cluster --name $CLUSTER_NAME --fargate
-#         eksctl create fargateprofile --cluster $CLUSTER_NAME --name staging
+     - name: Set up EKS on Fargate Environment
+       id: setup-fargate
+       run: |
+         eksctl create cluster --name $CLUSTER_NAME --fargate
+         eksctl create fargateprofile --cluster $CLUSTER_NAME --name staging
 
      - name: Update Kubeconfig
        id: update-kubeconfig
