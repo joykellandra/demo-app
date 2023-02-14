@@ -2,7 +2,8 @@ name: Build and Deploy to EKS on Fargate
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
     
 permissions:
    id-token: write
@@ -16,8 +17,8 @@ jobs:
      
      env:
        AWS_REGION: us-east-1
-  #     ECR_REPOSITORY_URI: ${{ steps.push.outputs.repositoryUri }}
-       AWS_CLUSTER_NAME: demo
+       ECR_REPOSITORY_URI: ${{ steps.build-image.outputs.repositoryUri }}
+       EKS_CLUSTER_NAME: demo
        
      steps:
      - name: Checkout
@@ -64,26 +65,43 @@ jobs:
          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
          echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
      
-     - name: Eksctl installer
-       uses: moia-oss/setup-eksctl@v1
-       with:
-         version: '0.67.0' # default is latest
-       id: install
+     - name: Set up EKS on Fargate Environment
+       id: setup-fargate
+       run: |
+         eksctl create cluster --name $CLUSTER_NAME --version 1.16 --fargate
+         $ eksctl create fargateprofile --cluster $CLUSTER_NAME --name staging
+
+     - name: Setup Kubeconfig
+       id: setup-kubeconfig
+       run: |
+         aws eks --region $AWS_REGION update-kubeconfig --name $EKS_CLUSTER_NAME
        
-     - name: Install Terraform
-       uses: hashicorp/setup-terraform@v2
-       with:
-         terraform_version: 1.1.7
-         working-directory: /fargate-deployment/terraform
-         tf_actions_command: apply
+     - name: Deploy K8S Yaml
+       id: deploy-k8s-yaml
+       env: 
+         K8S_YAML_DIR: ./fargate-deployment/K8S
+         IMAGE_NAME: ${{ steps.build-image.outputs.image }}
+         run: |
+           cd $K8S_YAML_DIR
+           kubectl apply -f deployment.yaml
+           kubectl apply -f service.yaml
+           
+     
+ 
+#     - name: Install Terraform
+#       uses: hashicorp/setup-terraform@v2
+#       with:
+#         terraform_version: 1.1.7
+#         working-directory: /fargate-deployment/terraform
+#         tf_actions_command: apply
          
 #     - name: Update kubeconfig
 #       id: Setup-Kubeconfig
 #       run: |
 #         aws eks --region $AWS_REGION update-kubeconfig --name $AWS_CLUSTER_NAME
 
-     - name: Set up EKS on Fargate Environment
-       uses: aws-actions/amazon-eks-fargate@v0.1.1
+ #    - name: Set up EKS on Fargate Environment
+ #      uses: aws-actions/amazon-eks-fargate@v0.1.1
     #   with:
      #    terraform_version: 1.1.7
       #   working-directory: ./fargate-deployment/terraform
