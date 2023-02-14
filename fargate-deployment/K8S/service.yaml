@@ -7,7 +7,7 @@ spec:
   selector:
     app: demo-app
   ports:
-    - name: http
+    - name: TCP
       port: 80
       targetPort: 8080
   type: LoadBalancer
