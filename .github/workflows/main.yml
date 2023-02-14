@@ -78,7 +78,7 @@ jobs:
          tf_actions_command: apply
          
      - name: Update kubeconfig
-       id: Set up Kube Config
+       id: Setup-Kubeconfig
        run: |
          aws eks --region $AWS_REGION update-kubeconfig --name $AWS_CLUSTER_NAME
 
