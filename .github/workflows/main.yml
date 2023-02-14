@@ -67,7 +67,7 @@ jobs:
      - name: Eksctl installer
        uses: moia-oss/setup-eksctl@v1
        with:
-         version: 'latest' # default is latest
+         version: '0.67.0' # default is latest
        id: install
        
      - name: Install Terraform
