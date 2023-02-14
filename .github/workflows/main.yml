@@ -65,49 +65,64 @@ jobs:
          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
          echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
          
+     - name: Install Kubectl
+       uses: azure/setup-kubectl@v3
+       with: 
+          version: 'latest'
+          id: install
+         
  #    - name: Helm on EKS (with eksctl)
  #      uses: tensor-hq/eksctl-helm-action@0.1.0
       
 #     - name: Eksctl Install
 #       uses: paunin/kops@v1.0.4
 
-     - name: Install kubectl
-       run: |
-         curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-         curl -LO "https://dl.k8s.io/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl.sha256"
-         echo "$(cat kubectl.sha256)  kubectl" | sha256sum --check
-         sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
-         kubectl version --client
+#     - name: Install kubectl
+#       run: |
+#         curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+#         curl -LO "https://dl.k8s.io/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl.sha256"
+#         echo "$(cat kubectl.sha256)  kubectl" | sha256sum --check
+#         sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+#         kubectl version --client
          
-     - name: Install Eksctl
-       run: |
-         curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
-         sudo mv /tmp/eksctl /usr/local/bin
-         eksctl version
+#     - name: Install Eksctl
+#       run: |
+#         curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+#         sudo mv /tmp/eksctl /usr/local/bin
+#         eksctl version
    
-     - name: Set up EKS on Fargate Environment
-       id: setup-fargate
-       run: |
-         eksctl create cluster --name $CLUSTER_NAME --fargate
-         eksctl create fargateprofile --cluster $CLUSTER_NAME --name staging
+#     - name: Set up EKS on Fargate Environment
+#       id: setup-fargate
+#       run: |
+#         eksctl create cluster --name $CLUSTER_NAME --fargate
+#         eksctl create fargateprofile --cluster $CLUSTER_NAME --name staging
 
-     - name: Setup Kubeconfig
-       id: setup-kubeconfig
+     - name: Update Kubeconfig
+       id: update-kubeconfig
        run: |
          aws eks --region $AWS_REGION update-kubeconfig --name $EKS_CLUSTER_NAME
-       
-     - name: Deploy K8S Yaml
-       id: deploy-k8s-yaml
+         
+     - name: Deploy Image to EKS on Fargate
+       id: deploy-to-fargate
        env: 
-         K8S_YAML_DIR: ./fargate-deployment/K8S
-         IMAGE_NAME: ${{ steps.build-image.outputs.image }}
+          K8S_YAML_DIR: ./fargate-deployment/K8S
        run: |
-           cd $K8S_YAML_DIR
-           kubectl apply -f deployment.yaml
-           kubectl apply -f service.yaml
-           
+         cd $K8S_YAML_DIR
+         kubectl apply -f deployment.yaml
+         kubectl apply -f service.yaml  
+         kubectl rollout restart -f deployment.yaml
+    
+       
+  #   - name: Deploy K8S Yaml
+  #     id: deploy-k8s-yaml
+  #     env: 
+  #       K8S_YAML_DIR: ./fargate-deployment/K8S
+  #       IMAGE_NAME: ${{ steps.build-image.outputs.image }}
+  #     run: |
+  #         cd $K8S_YAML_DIR
+  #         kubectl apply -f deployment.yaml
+  #         kubectl apply -f service.yaml        
    
- 
 #     - name: Install Terraform
 #       uses: hashicorp/setup-terraform@v2
 #       with:
