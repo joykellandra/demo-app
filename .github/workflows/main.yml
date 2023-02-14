@@ -86,7 +86,7 @@ jobs:
            kubectl apply -f deployment.yaml
            kubectl apply -f service.yaml
            
-     
+   
  
 #     - name: Install Terraform
 #       uses: hashicorp/setup-terraform@v2
