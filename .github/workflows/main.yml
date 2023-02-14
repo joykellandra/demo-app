@@ -76,20 +76,21 @@ jobs:
          terraform_version: 1.1.7
          working-directory: ./fargate-deployment/terraform
          tf_actions_command: apply
-
-     - name: Set up EKS on Fargate Environment
-       uses: aws-actions/amazon-eks-fargate@v0.1.1
-       with:
-         terraform_version: 1.1.7
-         working-directory: ./fargate-deployment/terraform
-         tf_actions_command: apply
          
      - name: Update kubeconfig
+       id: Set up Kube Config
        run: |
-         aws eks --region ${{ env.AWS_REGION }} update-kubeconfig --name demo 
-       
-     - name: Apply Kubernetes Deployment
-       run: kubectl apply -f ./fargate-deployment/K8S/deployment.yaml
+         aws eks --region $AWS_REGION update-kubeconfig --name $AWS_CLUSTER_NAME
 
-     - name: Apply Kubernetes Service
-       run: kubectl apply -f ./fargate-deployment/K8S/service.yaml
+   #  - name: Set up EKS on Fargate Environment
+   #    uses: aws-actions/amazon-eks-fargate@v0.1.1
+    #   with:
+     #    terraform_version: 1.1.7
+      #   working-directory: ./fargate-deployment/terraform
+       #  tf_actions_command: apply
+       
+ #    - name: Apply Kubernetes Deployment
+ #      run: kubectl apply -f ./fargate-deployment/K8S/deployment.yaml
+
+ #    - name: Apply Kubernetes Service
+ #      run: kubectl apply -f ./fargate-deployment/K8S/service.yaml
