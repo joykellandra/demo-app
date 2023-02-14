@@ -69,7 +69,7 @@ jobs:
        id: setup-fargate
        run: |
          eksctl create cluster --name $CLUSTER_NAME --version 1.16 --fargate
-         $ eksctl create fargateprofile --cluster $CLUSTER_NAME --name staging
+         eksctl create fargateprofile --cluster $CLUSTER_NAME --name staging
 
      - name: Setup Kubeconfig
        id: setup-kubeconfig
@@ -81,7 +81,7 @@ jobs:
        env: 
          K8S_YAML_DIR: ./fargate-deployment/K8S
          IMAGE_NAME: ${{ steps.build-image.outputs.image }}
-         run: |
+       run: |
            cd $K8S_YAML_DIR
            kubectl apply -f deployment.yaml
            kubectl apply -f service.yaml
