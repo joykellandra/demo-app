@@ -67,10 +67,7 @@ jobs:
          
      - name: Eksctl installer
        id: install
-       uses: moia-oss/setup-eksctl@v1
-       with:
-         version: 'latest' # default is latest
-  
+       uses: robatwave/github-action-eksctl@0.1.2
      
      - name: Set up EKS on Fargate Environment
        id: setup-fargate
