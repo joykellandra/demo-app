@@ -68,8 +68,16 @@ jobs:
  #    - name: Helm on EKS (with eksctl)
  #      uses: tensor-hq/eksctl-helm-action@0.1.0
       
-     - name: Eksctl Install
-       uses: paunin/kops@v1.0.4
+#     - name: Eksctl Install
+#       uses: paunin/kops@v1.0.4
+
+     - name: Install kubectl
+       run: |
+         curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+         curl -LO "https://dl.k8s.io/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl.sha256"
+         echo "$(<kubectl.sha256) kubectl" | sha256sum --check
+         sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+         kubectl version --client
    
      - name: Set up EKS on Fargate Environment
        id: setup-fargate
