@@ -64,6 +64,13 @@ jobs:
          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
          echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+         
+     - name: Eksctl installer
+       id: install
+       uses: moia-oss/setup-eksctl@v1
+       with:
+         version: 'latest' # default is latest
+  
      
      - name: Set up EKS on Fargate Environment
        id: setup-fargate
