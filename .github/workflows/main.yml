@@ -94,7 +94,6 @@ jobs:
      - name: Set up EKS on Fargate Environment
        id: setup-fargate
        run: |
-         eksctl delete cluster --region=us-east-1 --name=--fargate
          eksctl create cluster --name $CLUSTER_NAME --fargate
          eksctl create fargateprofile --cluster $CLUSTER_NAME --name staging
 
@@ -111,7 +110,7 @@ jobs:
          cd $K8S_YAML_DIR
          kubectl apply -f deployment.yaml
          kubectl apply -f service.yaml  
-         kubectl rollout restart -f deployment.yaml
+ #        kubectl rollout restart -f deployment.yaml
     
        
   #   - name: Deploy K8S Yaml
