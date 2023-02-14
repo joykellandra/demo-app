@@ -88,7 +88,7 @@ jobs:
      - name: Set up EKS on Fargate Environment
        id: setup-fargate
        run: |
-         eksctl create cluster --name $CLUSTER_NAME --version 1.16 --fargate
+         eksctl create cluster --name $CLUSTER_NAME --fargate
          eksctl create fargateprofile --cluster $CLUSTER_NAME --name staging
 
      - name: Setup Kubeconfig
