@@ -94,6 +94,7 @@ jobs:
      - name: Set up EKS on Fargate Environment
        id: setup-fargate
        run: |
+         eksctl delete cluster --region=us-east-1 --name=--fargate
          eksctl create cluster --name $CLUSTER_NAME --fargate
          eksctl create fargateprofile --cluster $CLUSTER_NAME --name staging
 
